@@ -14,7 +14,7 @@ import { useScale } from '@/hooks/useScale';
 import { Colors } from '@/constants/Colors';
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
+  headerImage?: ReactElement;
   headerBackgroundColor: { dark: string; light: string };
   headerLeftContent?: ReactElement;
   headerRightContent?: ReactElement;
@@ -35,12 +35,12 @@ export default function ParallaxScrollView({
   return (
     <ThemedView style={styles.container}>
       <Animated.View style={[styles.header, { backgroundColor: headerBackgroundColor["dark"] }]}>
-        {headerImage}
+        {/* {headerImage} */}
         
         <View style={styles.headerContent}>
           {/* Left section for text and buttons */}
           <View style={styles.leftSection}>
-            <LinearGradient
+            {/* <LinearGradient
                 colors={[
                   '#151718',
                   'rgba(21,23,24,1)',
@@ -50,7 +50,7 @@ export default function ParallaxScrollView({
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.leftGradient}
-            />
+            /> */}
             {headerLeftContent}
           </View>
 
@@ -70,9 +70,21 @@ export default function ParallaxScrollView({
           ]}
           start={{ x: 0.4, y: 0}}
           end={{ x: 0.4, y: 1 }}
-          locations={[0, 0.9, 0.5, 1]}
+          locations={[0.5, 0.84, 1, 1]}
           style={styles.headerOverlay}
         />
+        {/* <LinearGradient
+          colors={[
+            'rgba(0,0,0,0)',
+            '#151718',
+            'rgba(21,23,24,0.9)',
+            '#151718'
+          ]}
+          start={{ x: 0.4, y: 0}}
+          end={{ x: 0.4, y: 1 }}
+          locations={[0, 0.9, 0.5, 1]}
+          style={styles.headerOverlay}
+        /> */}
       </Animated.View>
       <Animated.ScrollView 
         ref={scrollRef} 
@@ -101,17 +113,25 @@ const useParallaxScrollViewStyles = function () {
       overflow: 'hidden',
     },
     headerContent: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
+      // position: 'absolute',
+      // top: 0,
+      // left: 0,
+      // right: 0,
+      // bottom: 0,
+      // flexDirection: 'row',
+      // height: '100%'
+      flex: 1,
+      justifyContent: 'center', 
+      alignItems: 'center',
       flexDirection: 'row',
-      height: '100%'
+      // paddingHorizontal: 16,
     },
     leftSection: {
       flex: 1,
-      position: 'relative',
+      // position: 'relative',
+      // justifyContent: 'center', 
+      // alignItems: 'center',
+      width: '40%',
     },
     rightSection: {
       flex: 1,

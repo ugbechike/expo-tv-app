@@ -1,27 +1,49 @@
 // import { Image, Pressable, StyleSheet, Text } from 'react-native';
 
 import { Image, Pressable, StyleSheet, Text, TVFocusGuideView } from 'react-native';
+import { useMovieDetailsStore } from '@/store/movieDetailsSlice';
+import { IMovie } from '@/types/movie';
 
+interface MovieCardProps extends IMovie {}
 export const MovieCard = ({
   title,
-  posterUri,
-  onFocus,
-}: {
-  title: string;
-  posterUri: string;
-  onFocus?: () => void;
-}) => {
-  
+  poster_path,
+  release_date,
+  overview,
+  vote_average,
+  vote_count,
+  videoUrl,
+  duration,
+  pg_rating,
+  genre,
+  video_type,
+}: MovieCardProps) => {
+  const { setMovieDetails } = useMovieDetailsStore();
+  const handleFocus = () => {
+    setMovieDetails({
+      title,
+      poster_path,
+      release_date,
+      overview,
+      vote_average,
+      vote_count,
+      videoUrl,
+      duration,
+      pg_rating,
+      genre,
+      video_type,
+    });
+  };
   return (
     <TVFocusGuideView
       // style={styles.card}
-      onFocus={onFocus}
+      onFocus={handleFocus}
     >
       <Pressable
-        onFocus={onFocus}
+        // onFocus={onFocus}
         style={({ focused }) => [styles.card, focused && styles.focused]}
       >
-        <Image source={{ uri: posterUri }} style={styles.poster} />
+        <Image source={{ uri: `https://image.tmdb.org/t/p/w500${poster_path}` }} style={styles.poster} />
         {/* <Text numberOfLines={1} style={styles.title}>{title}tttt</Text> */}
       </Pressable>
     </TVFocusGuideView>

@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { MovieCard } from './MovieCard';
+import { IMovie } from '@/types/movie';
 
 export const MovieCarousel = ({ title, movies }: {
   title: string;
-  movies: { id: number; title?: string; poster_path: string }[];
+  movies: IMovie[];
 }) => {
   return (
 
@@ -14,11 +15,12 @@ export const MovieCarousel = ({ title, movies }: {
         horizontal
         estimatedItemSize={150}
         data={movies}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.id?.toString() ?? ''}
         renderItem={({ item }) => (
           <MovieCard
-            title={item?.title ?? ''}
-            posterUri={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+            // title={item?.title ?? ''}
+            // posterUri={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+            {...item}
           />
         )}
         showsHorizontalScrollIndicator={false}
