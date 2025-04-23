@@ -1,19 +1,18 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { StyleSheet, Image, Platform } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
+import { Collapsible } from '@/components/Collapsible';
+import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useScale } from '@/hooks/useScale';
 import { MovieCarousel } from '@/components/MovieeCardList';
-import topRatedMovies from '@/mocks/topRatedMovies.json';
-import upcomingMovies from '@/mocks/upcomingMovies.json';
-import popularMovies from '@/mocks/popularMovies.json';
-import nowPlayingMovies from '@/mocks/nowPlaying.json';
-import trendingMovies from '@/mocks/trendingMovies.json';
+import trendingTvShows from '@/mocks/trendingTvShows.json';
+import popularTvShows from '@/mocks/popularTvShows.json';
 
-export default function HomeScreen() {
-  const styles = useHomeScreenStyles();
+export default function ExploreScreen() {
+  const styles = useTvShowsScreenStyles();
   const scale = useScale();
   return (
     <ParallaxScrollView
@@ -27,16 +26,13 @@ export default function HomeScreen() {
         />
       }
     >
-      <MovieCarousel title="Trending" movies={trendingMovies.results} />
-      <MovieCarousel title="Now playing" movies={nowPlayingMovies.results} />
-      <MovieCarousel title="Top Rated" movies={topRatedMovies.results} />
-      <MovieCarousel title="Upcoming" movies={upcomingMovies.results} />
-      <MovieCarousel title="Popular" movies={popularMovies.results} />
+      <MovieCarousel title="Trending TV Shows" movies={trendingTvShows.results} />
+      <MovieCarousel title="Popular shows" movies={popularTvShows.results} />
     </ParallaxScrollView>
   );
 }
 
-const useHomeScreenStyles = function () {
+const useTvShowsScreenStyles = function () {
   const scale = useScale();
   return StyleSheet.create({
     titleContainer: {
