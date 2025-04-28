@@ -1,5 +1,5 @@
-import { Tabs } from 'expo-router';
-import React, { useState } from 'react';
+import { Redirect, router, Tabs } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { Platform, Pressable, View, Text, TVFocusGuideView, Image } from 'react-native';
 import { BottomTabBarButtonProps, BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
@@ -8,17 +8,20 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTextStyles } from '@/hooks/useTextStyles';
 import { useScale } from '@/hooks/useScale';
 import { ThemedView } from '@/components/ThemedView';
-// import { TabBar } from '@/components/TabBar';
 
-// import { View, Platform } from 'react-native';
 import { useLinkBuilder, useTheme } from '@react-navigation/native';
-// import { Text, PlatformPressable } from '@react-navigation/elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useAuth } from '@/store/authSlice';
+
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const textStyles = useTextStyles();
-  const scale = useScale();
+
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Redirect href="/auth" />;
+  }
 
   const tabBarButton = (props: BottomTabBarButtonProps) => {
     const style: any = props.style ?? {};
@@ -111,7 +114,6 @@ function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { buildHref } = useLinkBuilder();
   console.log('state', state);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
-
   
 
   return (
@@ -159,14 +161,14 @@ function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         const onFocus = () => {
           setFocusedIndex(index);
           // Navigate to that screen on focus
-          if(index !== 0) {
+          // if(index !== 0) {
+          // navigation.navigate(route.name, route.params);
+          // }
           navigation.navigate(route.name, route.params);
-          }
         };        
 
         return (
-          <TVFocusGuideView 
-          
+          <TVFocusGuideView           
           focusable={true} 
           onFocus={onFocus} 
 

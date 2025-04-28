@@ -17,7 +17,12 @@
           }
         }
       ],
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "https://routertv.expo.app"
+        }
+      ],
       "expo-font",
       "expo-video"
     ],
@@ -34,7 +39,7 @@
     "web": {
       "bundler": "metro",
       "favicon": "./assets/images/favicon.png",
-      "output": "static"
+      "output": "server"
     },
     "experiments": {
       "typedRoutes": true

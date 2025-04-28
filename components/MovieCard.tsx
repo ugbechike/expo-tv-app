@@ -3,7 +3,7 @@
 import { Image, Pressable, StyleSheet, Text, TVFocusGuideView } from 'react-native';
 import { useMovieDetailsStore } from '@/store/movieDetailsSlice';
 import { IMovie } from '@/types/movie';
-
+import { router } from 'expo-router';
 interface MovieCardProps extends IMovie {}
 export const MovieCard = ({
   title,
@@ -17,6 +17,7 @@ export const MovieCard = ({
   pg_rating,
   genre,
   video_type,
+  id,
 }: MovieCardProps) => {
   const { setMovieDetails } = useMovieDetailsStore();
   const handleFocus = () => {
@@ -42,6 +43,7 @@ export const MovieCard = ({
       <Pressable
         // onFocus={onFocus}
         style={({ focused }) => [styles.card, focused && styles.focused]}
+        onPress={() => router.push(`/details/${id}`)}
       >
         <Image source={{ uri: `https://image.tmdb.org/t/p/w500${poster_path}` }} style={styles.poster} />
         {/* <Text numberOfLines={1} style={styles.title}>{title}tttt</Text> */}

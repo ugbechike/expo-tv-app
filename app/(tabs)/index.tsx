@@ -12,6 +12,9 @@ import { useMovieDetailsStore } from "@/store/movieDetailsSlice";
 import { formatDate } from "@/utils/dateFormat";
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { LinearGradient } from "expo-linear-gradient";
+import { useIsFocused } from "@react-navigation/native";
+import { useEffect } from "react";
+import { usePayment } from "@/hooks/api/usePayment";
 
 export default function HomeScreen() {
   const styles = useHomeScreenStyles();
@@ -19,11 +22,25 @@ export default function HomeScreen() {
   const { movieDetails } = useMovieDetailsStore();
   const releaseYear = formatDate(movieDetails?.release_date as string);
   const videoSource = movieDetails?.videoUrl!;
+  const isFocused = useIsFocused();
+  const { data: paymentData } = usePayment();
+  console.log('paymentData', paymentData);
+
   const player = useVideoPlayer(videoSource, player => {
     player.loop = true;
-    player.play();
-    
   });
+
+  useEffect(() => {
+    if (player) {
+      if (isFocused) {
+        console.log("Screen focused, playing video.");
+        player.play();
+      } else {
+        console.log("Screen blurred, pausing video.");
+        player.pause();
+      }
+    }
+  }, [isFocused, player]);
 
   return (
     <ParallaxScrollView
