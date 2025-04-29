@@ -1,191 +1,224 @@
-import { TVFocusGuideView, View, Text, StyleSheet, Image, Pressable } from "react-native";
-import { useScale } from "@/hooks/useScale";
-import { useLocalSearchParams } from "expo-router";
-import { useGetMovieDetails } from "@/hooks/api/useGetMovieDetails";
-import { useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ImageBackground,
+} from "react-native";
+import { useState, useEffect } from "react";
 import QRCode from "react-native-qrcode-svg";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { TVFocusGuideView } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useScale } from "@/hooks/useScale";
+import { router, useLocalSearchParams } from "expo-router";
+import { Tab } from "@/components/Tab";
+import { usePayment } from "@/hooks/api/usePayment";
+import { useGetMovieDetails } from "@/hooks/api/useGetMovieDetails";
+
+const tabs = [
+  { id: "fiat", title: "Pay with Card" },
+  { id: "crypto", title: "Pay with Crypto" },
+];
 
 export default function Payment() {
+  const [activeTab, setActiveTab] = useState("fiat");
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "dark"];
   const styles = usePaymentStyles();
   const { id } = useLocalSearchParams();
-  const [selectedPayment, setSelectedPayment] = useState<"card" | "crypto" | null>(null);
-  const [focusValue, setFocusValue] = useState<string | null>(null);
-  const scale = useScale();
-
+  const { data: payment } = usePayment();
   const { data: movieDetails } = useGetMovieDetails(Number(id));
 
-  const getQRUrl = () => {
-    if (selectedPayment === "card") {
-      return "mytvapp.com/fiat";
-    }
-    return "mytvapp.com/crypto";
-  };
+  console.log('======',{payment});
+
+  const qrData = JSON.stringify({
+    type: "payment",
+    url: "myapp.com/t2",
+    code: 12344,
+  });
 
   return (
-    <TVFocusGuideView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.imageContainer}>
-          <Image 
-            source={{ uri: movieDetails?.poster_path }} 
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </View>
-        
-        <Text style={styles.title}>
-          You are about to buy {movieDetails?.title} for $19.99
-        </Text>
+    <ImageBackground
+      source={{
+        uri: `https://image.tmdb.org/t/p/w500${movieDetails?.poster_path}`,
+      }}
+      style={styles.backgroundImage}
+    >
+      <LinearGradient
+        colors={["rgba(0,0,0,0.7)", "rgba(0,0,0,0.9)"]}
+        style={styles.gradient}
+      >
+        <View style={styles.container}>
+          <View style={styles.content}>
+            <Text style={styles.headerText}>Choose a payment method</Text>
 
-        <View style={styles.paymentSection}>
-          <Text style={styles.subtitle}>Select payment method</Text>
-          
-          <View style={styles.buttonContainer}>
-            <TVFocusGuideView
-              onFocus={() => setFocusValue("card")}
-              onBlur={() => setFocusValue(null)}
-            >
-              <Pressable
-                style={[
-                  styles.button,
-                  focusValue === "card" && styles.buttonFocused,
-                  selectedPayment === "card" && styles.buttonSelected,
-                ]}
-                onPress={() => setSelectedPayment("card")}
-              >
-                <Text style={[
-                  styles.buttonText,
-                  (focusValue === "card" || selectedPayment === "card") && styles.buttonTextFocused
-                ]}>
-                  Pay with card
-                </Text>
-              </Pressable>
-            </TVFocusGuideView>
+            <Tab
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              tabs={tabs}
+            />
 
-            <TVFocusGuideView
-              onFocus={() => setFocusValue("crypto")}
-              onBlur={() => setFocusValue(null)}
-            >
-              <Pressable
-                style={[
-                  styles.button,
-                  focusValue === "crypto" && styles.buttonFocused,
-                  selectedPayment === "crypto" && styles.buttonSelected,
-                ]}
-                onPress={() => setSelectedPayment("crypto")}
-              >
-                <Text style={[
-                  styles.buttonText,
-                  (focusValue === "crypto" || selectedPayment === "crypto") && styles.buttonTextFocused
-                ]}>
-                  Pay with crypto
-                </Text>
-              </Pressable>
-            </TVFocusGuideView>
-          </View>
-        </View>
+            <View style={styles.mainContent}>
+              {activeTab === "fiat" ? (
+                <View style={styles.fiatContent}>
+                  <View style={styles.rightSection}>
+                    <View style={styles.stepNumber}>
+                      <Text style={styles.stepNumberText}>1</Text>
+                    </View>
 
-        {selectedPayment && (
-          <View style={styles.qrSection}>
-            <View style={styles.qrContainer}>
-              <QRCode
-                value={getQRUrl()}
-                size={200 * scale}
-                backgroundColor="transparent"
-                color="white"
-              />
+                    <View style={styles.qrContainer}>
+                      <Text style={styles.stepText}>
+                        Use your phone or tablet's camera and point to this
+                        code, or go to myapp.com/t2
+                      </Text>
+                      <QRCode
+                        value={qrData}
+                        size={350}
+                        backgroundColor="transparent"
+                        color="white"
+                      />
+                    </View>
+                  </View>
+                  {/* Here should be in between with OR */}
+                  <View style={styles.orContainer}>
+                    <Text style={styles.orText}>OR</Text>
+                  </View>
+                  <View style={styles.leftSection}>
+                    <View style={styles.stepNumber}>
+                      <Text style={styles.stepNumberText}>2</Text>
+                    </View>
+                    <View>
+                      <Text style={styles.stepText}>
+                        Stripe card payment will go here...
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.remoteContent}>
+                  <View style={styles.qrContainer}>
+                    <Text style={styles.stepText}>
+                      Pay with Crypto, use your wallet to pay. Scan the QR code
+                      to continue purchase.
+                    </Text>
+                    <QRCode
+                      value={qrData}
+                      size={350}
+                      backgroundColor="transparent"
+                      color="white"
+                    />
+                  </View>
+                </View>
+              )}
             </View>
-            {selectedPayment === "crypto" && (
-              <Text style={styles.cryptoNote}>
-                Note: We only accept USDC payments at this time.
-              </Text>
-            )}
           </View>
-        )}
-      </View>
-    </TVFocusGuideView>
+        </View>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
 
-const usePaymentStyles = function () {
+const usePaymentStyles = () => {
   const scale = useScale();
   return StyleSheet.create({
-    container: {
+    backgroundImage: {
       flex: 1,
-      backgroundColor: "#151718",
-      padding: 40 * scale,
-    },
-    content: {
-      flex: 1,
-      alignItems: "center",
-      gap: 32 * scale,
-    },
-    imageContainer: {
-      width: 200 * scale,
-      height: 300 * scale,
-      borderRadius: 12 * scale,
-      overflow: "hidden",
-      marginTop: 40 * scale,
-    },
-    image: {
       width: "100%",
       height: "100%",
     },
-    title: {
-      fontSize: 24 * scale,
+    gradient: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+      paddingHorizontal: 40,
+      paddingVertical: 40,
+    },
+    content: {
+      flex: 1,
+      width: "100%",
+      gap: 20,
+    },
+    headerText: {
+      fontSize: 42,
+      fontWeight: "bold",
       color: "white",
-      fontWeight: "600",
+      // marginBottom: 40,
       textAlign: "center",
     },
-    subtitle: {
-      fontSize: 20 * scale,
-      color: "white",
-      fontWeight: "500",
-      marginBottom: 16 * scale,
+    mainContent: {
+      flex: 1,
+      width: "100%",
     },
-    paymentSection: {
-      alignItems: "center",
-      gap: 16 * scale,
-    },
-    buttonContainer: {
+    fiatContent: {
+      flex: 1,
       flexDirection: "row",
-      gap: 16 * scale,
+      justifyContent: "space-between",
+      alignItems: "baseline",
     },
-    button: {
-      paddingHorizontal: 32 * scale,
-      paddingVertical: 16 * scale,
-      backgroundColor: "rgba(255,255,255,0.1)",
-      borderRadius: 8 * scale,
-      minWidth: 200 * scale,
-    },
-    buttonFocused: {
-      backgroundColor: "rgba(255,255,255,0.2)",
-      transform: [{ scale: 1.04 }],
-    },
-    buttonSelected: {
-      backgroundColor: "white",
-    },
-    buttonText: {
-      color: "white",
-      fontSize: 16 * scale,
-      textAlign: "center",
-      fontWeight: "500",
-    },
-    buttonTextFocused: {
-      color: "#151718",
-    },
-    qrSection: {
+    stepNumber: {
+      backgroundColor: "rgba(255,255,255,0.6)",
+      borderRadius: 50,
       alignItems: "center",
-      gap: 16 * scale,
+      justifyContent: "center",
+      width: 20 * scale,
+      height: 20 * scale,
+    },
+    stepNumberText: {
+      color: "white",
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    leftSection: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "baseline",
+      justifyContent: "center",
+      gap: 20,
+    },
+    rightSection: {
+      flex: 1,
+      alignItems: "baseline",
+      flexDirection: "row",
+      justifyContent: "center",
+    },
+    stepText: {
+      color: "white",
+      fontSize: 24,
+      marginBottom: 30,
+      maxWidth: 500,
     },
     qrContainer: {
-      padding: 24 * scale,
-      backgroundColor: "rgba(255,255,255,0.1)",
-      borderRadius: 16 * scale,
+      alignItems: "center",
+      padding: 20,
     },
-    cryptoNote: {
-      color: "rgba(255,255,255,0.7)",
-      fontSize: 14 * scale,
-      textAlign: "center",
+    remoteContent: {
+      flex: 1,
+      width: "100%",
+      maxWidth: 500,
+      marginHorizontal: "auto",
+      marginTop: 40,
+    },
+    button: {
+      height: 60,
+      borderRadius: 8,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    buttonText: {
+      fontSize: 24,
+      fontWeight: "bold",
+    },
+    orContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 20,
+    },
+    orText: {
+      color: "white",
+      fontSize: 24,
+      fontWeight: "bold",
     },
   });
 };

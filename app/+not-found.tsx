@@ -1,12 +1,12 @@
 import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TVFocusGuideView } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
 export default function NotFoundScreen() {
   return (
-    <>
+    <TVFocusGuideView style={styles.container}>
       <Stack.Screen options={{ title: 'Oops!' }} />
       <ThemedView style={styles.container}>
         <ThemedText type="title">This screen doesn't exist.</ThemedText>
@@ -14,7 +14,7 @@ export default function NotFoundScreen() {
           <ThemedText type="link">Go to home screen!</ThemedText>
         </Link>
       </ThemedView>
-    </>
+    </TVFocusGuideView>
   );
 }
 

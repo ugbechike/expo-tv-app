@@ -5,12 +5,8 @@ import { BottomTabBarButtonProps, BottomTabBarProps } from '@react-navigation/bo
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useTextStyles } from '@/hooks/useTextStyles';
-import { useScale } from '@/hooks/useScale';
-import { ThemedView } from '@/components/ThemedView';
 
 import { useLinkBuilder, useTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useAuth } from '@/store/authSlice';
 
 
@@ -90,17 +86,6 @@ export default function TabLayout() {
               name={focused ? 'code-slash' : 'code-slash-outline'}
               color={color}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="tv_focus"
-        options={{
-          title: 'TV event demo',
-          tabBarButton,
-          // tabBarLabelStyle: textStyles.default,
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'tv' : 'tv-outline'} color={color} />
           ),
         }}
       />

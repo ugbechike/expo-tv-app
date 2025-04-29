@@ -43,7 +43,7 @@ export const MovieCard = ({
       <Pressable
         // onFocus={onFocus}
         style={({ focused }) => [styles.card, focused && styles.focused]}
-        onPress={() => router.push(`/details/${id}`)}
+        onPress={() => router.navigate(`/details/${id}`)}
       >
         <Image source={{ uri: `https://image.tmdb.org/t/p/w500${poster_path}` }} style={styles.poster} />
         {/* <Text numberOfLines={1} style={styles.title}>{title}tttt</Text> */}

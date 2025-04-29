@@ -1,5 +1,5 @@
 import { useScale } from "@/hooks/useScale";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useGetMovieDetails } from "@/hooks/api/useGetMovieDetails";
 import {
   Pressable,
@@ -23,22 +23,33 @@ export default function Details() {
   const releaseYear = formatDate(movieDetails?.release_date as string);
   const scale = useScale();
   const [focusValue, setFocusValue] = useState<string | null>("buy");
+  const router = useRouter();
+
 
   const player = useVideoPlayer(videoSource, (player) => {
     player.loop = true;
+    // player.play();
   });
 
-  useEffect(() => {
-    if (player) {
-      if (isFocused) {
-        console.log("Screen focused, playing video.");
-        player.play();
-      } else {
-        console.log("Screen blurred, pausing video.");
-        player.pause();
-      }
-    }
-  }, [isFocused, player]);
+  // useEffect(() => {
+  //   if (player) {
+  //     if (isFocused) {
+  //       console.log("Screen focused, playing video.");
+  //       player.play();
+  //     } else {
+  //       console.log("Screen blurred, pausing video.");
+  //       player.pause();
+  //     }
+  //   }
+  // }, [isFocused, player]);
+
+  const handleRentAndPause = () => {
+    // player.
+    // ();
+    // router.navigate(`/payment/${id}`);
+
+    router.navigate(`/payment/${id}`);
+  }
 
   return (
     <TVFocusGuideView style={styles.container}>
@@ -89,10 +100,7 @@ export default function Details() {
                       backgroundColor: "white",
                     },
                   ]}
-                  onPress={() => router.push({
-                    pathname: '/payment/[id]',
-                    params: { id: id as string },
-                  })}
+                  onPress={handleRentAndPause}
                 >
                   <Text
                     style={[
@@ -116,10 +124,7 @@ export default function Details() {
                       backgroundColor: "white",
                     },
                   ]}
-                  onPress={() => router.push({
-                    pathname: '/payment/[id]',
-                    params: { id: id as string },
-                  })}
+                  onPress={handleRentAndPause}
                 >
                   <Text
                     style={[
