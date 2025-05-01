@@ -4,6 +4,16 @@ import { router } from "expo-router";
 import { useAuth } from "@/store/authSlice";
 import { AuthChangeEvent, Session, Subscription, User } from '@supabase/supabase-js';
 
+
+const updateUser = async (user: User, options: any) => {
+  return await supabase.auth.updateUser({
+    // ...user,
+    data: {
+      ...options
+     }
+  })
+}
+
 export const useSignin = (options?: {
   onPollingStart?: () => void;
   onPollingEnd?: (session: Session | null) => void;
@@ -96,6 +106,12 @@ export const useSignup = (options?: {
             console.log("Signup Polling: Email confirmed and signed in!");
             setUser(signInData.session.user);
             setToken(signInData.session.access_token);
+            const {data, error} = await updateUser(signInData.session.user, {
+              userName: signInData.session.user,
+              purchasedMovies: [],
+              rentedMovies: [],
+            });
+            console.log('=======updateUser=====', {data, error});
             cleanupPolling(signInData.session);
             router.replace('/(tabs)');
             return true;

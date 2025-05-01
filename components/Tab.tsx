@@ -6,6 +6,7 @@ import {
   TVFocusGuideView,
   View,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";
@@ -68,6 +69,7 @@ export const Tab = ({ activeTab, setActiveTab, tabs }: TabProps) => {
 
 const useTabStyles = () => {
   const scale = useScale();
+  const isIos = Platform.OS === 'ios' && !Platform.isTV;
   return StyleSheet.create({
     backgroundImage: {
       flex: 1,
@@ -101,7 +103,7 @@ const useTabStyles = () => {
     },
     tabWrapper: {
       flexDirection: "row",
-      width: "30%",
+      width: isIos ? "80%" : "30%",
       justifyContent: "center",
       backgroundColor: "rgba(255,255,255,0.5)",
       borderRadius: 50,
@@ -111,13 +113,13 @@ const useTabStyles = () => {
       flex: 1,
     },
     tabButton: {
-      height: 60,
+      height: isIos ? 40 : 60,
       borderRadius: 50,
       justifyContent: "center",
       alignItems: "center",
     },
     tabText: {
-      fontSize: 24,
+      fontSize: isIos ? 18 : 24,
       fontWeight: "bold",
     },
     mainContent: {

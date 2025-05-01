@@ -1,5 +1,11 @@
 import { User } from "@supabase/supabase-js";
 import { create } from "zustand";
+import { IMovie } from "@/types/movie";
+
+export interface UserData extends User {
+  rentedMovies: IMovie[];
+  purchasedMovies: IMovie[];
+}
 
 interface AuthState {
   user: User | null;

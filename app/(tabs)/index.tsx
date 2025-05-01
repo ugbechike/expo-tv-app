@@ -15,19 +15,23 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect } from "react";
 import { usePayment } from "@/hooks/api/usePayment";
+// import { useGetMovies } from "@/hooks/api/useGetMovies";
 
 export default function HomeScreen() {
   const styles = useHomeScreenStyles();
   const scale = useScale();
   const { movieDetails } = useMovieDetailsStore();
+  // const { data: trendingMovies } = useGetMovies();
   const releaseYear = formatDate(movieDetails?.release_date as string);
   const videoSource = movieDetails?.videoUrl!;
   const isFocused = useIsFocused();
   const { data: paymentData } = usePayment();
   console.log('paymentData', paymentData);
 
+
   const player = useVideoPlayer(videoSource, player => {
     player.loop = true;
+    player.muted = true;
   });
 
   useEffect(() => {
@@ -120,7 +124,7 @@ export default function HomeScreen() {
         </View>
       }
     >
-      <MovieCarousel title="Trending" movies={trendingMovies.results} />
+      <MovieCarousel title="Trending" movies={trendingMovies?.results!} />
       <MovieCarousel title="Now playing" movies={nowPlayingMovies.results} />
       <MovieCarousel title="Top Rated" movies={topRatedMovies.results} />
       <MovieCarousel title="Upcoming" movies={upcomingMovies.results} />

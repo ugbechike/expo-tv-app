@@ -5,8 +5,7 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { View } from "react-native";
+import { lazy, useEffect } from "react";
 
 import {
   QueryClient,
@@ -15,6 +14,13 @@ import {
 
 import { Colors } from "@/constants/Colors";
 import useAuthEvent from "@/hooks/api/useAuthEvent";
+import { Platform } from "react-native";
+// import StripeProvider from "@/components/StripeProvider.tvos";
+const StripeProvider = Platform.isTV
+  ? require('@/components/StripeProvider.tvos').default
+  : require('@/components/StripeProvider.ios').default;
+
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -55,16 +61,18 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={CustomDarkTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="auth/index" />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-          <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
-          <Stack.Screen name="payment/[id]" options={{ headerShown: false }} />
-        </Stack>
-
-      </ThemeProvider>
+      <StripeProvider>
+        <ThemeProvider value={CustomDarkTheme}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="auth/index" />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+            <Stack.Screen name="details/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="payment/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="player/[id]" options={{ headerShown: false }} />
+          </Stack>
+        </ThemeProvider>
+      </StripeProvider>
     </QueryClientProvider>
   );
 }

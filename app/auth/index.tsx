@@ -9,7 +9,7 @@ import {
   ImageBackground,
   Linking,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import QRCode from "react-native-qrcode-svg";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -18,6 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useScale } from "@/hooks/useScale";
 import { router } from "expo-router";
 
+// @TODO Clean code
 export default function Auth() {
   const { mutate: signin, isPending: isSigningIn, error: signinError } = useSignin();
   const [isWaitingForConfirmation, setIsWaitingForConfirmation] = useState(false);
@@ -79,6 +80,8 @@ export default function Auth() {
     return "Sign In";
   };
 
+  const title = Platform.isTVOS ? "Choose how to sign in" : "Sign in";
+
   return (
     <ImageBackground
       source={{
@@ -92,9 +95,9 @@ export default function Auth() {
       >
         <View style={styles.container}>
           <View style={styles.content}>
-            <Text style={styles.headerText}>Choose how to sign in</Text>
+            <Text style={styles.headerText}>{title}</Text>
 
-            <View style={styles.tabContainer}>
+            {Platform.isTVOS && <View style={styles.tabContainer}>
               <View style={styles.tabWrapper}>
                 <TVFocusGuideView
                   style={styles.tab}
@@ -154,9 +157,10 @@ export default function Auth() {
                   </Pressable>
                 </TVFocusGuideView>
               </View>
-            </View>
+            </View>}
 
             <View style={styles.mainContent}>
+             {Platform.isTVOS ? <Fragment>
               {activeTab === "phone" ? (
                 <View style={styles.phoneContent}>
                   <View style={styles.rightSection}>
@@ -312,6 +316,127 @@ export default function Auth() {
                   </View>
                 </View>
               )}
+              </Fragment> : <Fragment>
+              <View style={styles.remoteContent}>
+                  <View style={styles.form}>
+                    <TVFocusGuideView
+                      style={styles.inputContainer}
+                      onFocus={() => setFocusedInput("email")}
+                      onBlur={() => setFocusedInput(null)}
+                    >
+                      <TextInput
+                        style={[
+                          styles.input,
+                          {
+                            color: "black",
+                            borderWidth: 1,
+                            borderColor:
+                              focusedInput === "email"
+                                ? "green"
+                                : "rgba(255,255,255,0.3)",
+                            backgroundColor: "white",
+                          },
+                        ]}
+                        placeholder="Email"
+                        placeholderTextColor="black"
+                        value={email}
+                        onChangeText={setEmail}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                      />
+                    </TVFocusGuideView>
+
+                    <TVFocusGuideView
+                      style={styles.inputContainer}
+                      onFocus={() => setFocusedInput("password")}
+                      onBlur={() => setFocusedInput(null)}
+                    >
+                      <TextInput
+                        style={[
+                          styles.input,
+                          {
+                            color: "black",
+                            borderWidth: 1,
+                            borderColor:
+                              focusedInput === "password"
+                                ? "green"
+                                : "rgba(255,255,255,0.3)",
+                            backgroundColor: "white",
+                          },
+                        ]}
+                        placeholder="Password"
+                        placeholderTextColor="black"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                      />
+                    </TVFocusGuideView>
+
+                    <TVFocusGuideView
+                      style={styles.buttonContainer}
+                      onFocus={() => setFocusedButton("login")}
+                      onBlur={() => setFocusedButton(null)}
+                    >
+                      <Pressable
+                        style={[
+                          styles.button,
+                          {
+                            backgroundColor:
+                              focusedButton === "login"
+                                ? colors.tint
+                                : "rgba(255,255,255,0.1)",
+                            transform: [
+                              { scale: focusedButton === "login" ? 1.05 : 1 },
+                            ],
+                          },
+                        ]}
+                        onPress={handleAuth}
+                        disabled={isSigningUp || isWaitingForConfirmation}
+                      >
+                        <Text
+                          style={[
+                            styles.buttonText,
+                            {
+                              color:
+                                focusedButton === "login" ? "black" : "white",
+                            },
+                          ]}
+                        >
+                          {getButtonText()}
+                        </Text>
+                      </Pressable>
+                    </TVFocusGuideView>
+
+                    <TVFocusGuideView
+                      style={styles.buttonContainer}
+                      onFocus={() => setFocusedButton("intent")}
+                      onBlur={() => setFocusedButton(null)}
+                    >
+                      <Pressable
+                        onPress={() => setIntent(intent === "signup" ? "signin" : "signup")}
+                      >
+                        <Text
+                          style={[
+                            styles.buttonText,
+                            { 
+                              color:
+                                focusedButton === "intent" ? "blue" : "white",
+                            },
+                          ]}
+                        >
+                          {intent === "signup" ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
+                        </Text>
+                      </Pressable>
+                    </TVFocusGuideView>
+
+                    {(signupError || signinError) && (
+                      <Text style={styles.errorText}>
+                        {signupError?.message || signinError?.message || 'An error occurred'}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              </Fragment>}
             </View>
           </View>
         </View>
@@ -322,6 +447,7 @@ export default function Auth() {
 
 const useAuthStyles = () => {
   const scale = useScale();
+  const isIos = Platform.OS === 'ios' && !Platform.isTV;
   return StyleSheet.create({
     backgroundImage: {
       flex: 1,
@@ -340,9 +466,11 @@ const useAuthStyles = () => {
       flex: 1,
       width: "100%",
       gap: 20,
+      paddingTop: isIos ? 30 : 0,
+
     },
     headerText: {
-      fontSize: 42,
+      fontSize: isIos ? 26 : 42 * scale,
       fontWeight: "bold",
       color: "white",
       // marginBottom: 40,
@@ -352,10 +480,11 @@ const useAuthStyles = () => {
       flexDirection: "row",
       justifyContent: "center",
       gap: 40,
+      width: "100%",
     },
     tabWrapper: {
       flexDirection: "row",
-      width: "30%",
+      width: isIos ? "100%" : "30%",
       justifyContent: "center",
       backgroundColor: "rgba(255,255,255,0.5)",
       borderRadius: 50,
@@ -457,7 +586,7 @@ const useAuthStyles = () => {
       alignItems: "center",
     },
     buttonText: {
-      fontSize: 24,
+      fontSize: 20,
       fontWeight: "bold",
     },
     errorText: {

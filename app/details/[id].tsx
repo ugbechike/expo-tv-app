@@ -2,7 +2,10 @@ import { useScale } from "@/hooks/useScale";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useGetMovieDetails } from "@/hooks/api/useGetMovieDetails";
 import {
+  InteractionManager,
+  Platform,
   Pressable,
+  SafeAreaView,
   StyleSheet,
   Text,
   TVFocusGuideView,
@@ -27,29 +30,24 @@ export default function Details() {
 
 
   const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true;
-    // player.play();
+    player.loop = false;
+    player.play();
+    player.muted = true;
   });
 
-  // useEffect(() => {
-  //   if (player) {
-  //     if (isFocused) {
-  //       console.log("Screen focused, playing video.");
-  //       player.play();
-  //     } else {
-  //       console.log("Screen blurred, pausing video.");
-  //       player.pause();
-  //     }
-  //   }
-  // }, [isFocused, player]);
+  const handleRentAndPause = (intent: string) => {
+ 
+    router.push({
+      pathname: '/payment/[id]',
+      params: {
+        id: id as string,
+        intent: intent,
+      },
+    });
 
-  const handleRentAndPause = () => {
-    // player.
-    // ();
-    // router.navigate(`/payment/${id}`);
 
-    router.navigate(`/payment/${id}`);
   }
+
 
   return (
     <TVFocusGuideView style={styles.container}>
@@ -100,7 +98,7 @@ export default function Details() {
                       backgroundColor: "white",
                     },
                   ]}
-                  onPress={handleRentAndPause}
+                  onPress={() => handleRentAndPause('buy')}
                 >
                   <Text
                     style={[
@@ -108,7 +106,7 @@ export default function Details() {
                       focusValue === "buy" && { color: "#151718" },
                     ]}
                   >
-                    Buy $19.99
+                    Buy ${movieDetails?.buyPrice}
                   </Text>
                 </Pressable>
               </TVFocusGuideView>
@@ -124,7 +122,7 @@ export default function Details() {
                       backgroundColor: "white",
                     },
                   ]}
-                  onPress={handleRentAndPause}
+                  onPress={() => handleRentAndPause('rent')}
                 >
                   <Text
                     style={[
@@ -132,7 +130,7 @@ export default function Details() {
                       focusValue === "rent" && { color: "#151718" },
                     ]}
                   >
-                    Rent $6.99
+                    Rent ${movieDetails?.rentPrice}
                   </Text>
                 </Pressable>
               </TVFocusGuideView>
@@ -141,9 +139,10 @@ export default function Details() {
               <View
                 style={{
                   flex: 1,
+                  marginBottom: 16 * scale,
                 }}
               >
-                <Text style={styles.description}>{movieDetails?.overview}</Text>
+                <Text style={styles.description}>{movieDetails?.overview}dddd</Text>
               </View>
 
               <View
@@ -193,6 +192,7 @@ export default function Details() {
 
 const useDetailsStyles = function () {
   const scale = useScale();
+  const isIos = Platform.OS === 'ios' && !Platform.isTV;
   return StyleSheet.create({
     container: {
       flex: 1,
@@ -228,7 +228,7 @@ const useDetailsStyles = function () {
     },
     contentContainer: {
       position: "absolute",
-      top: 0,
+      top: isIos ? 40 * scale : 0,
       left: 0,
       right: 0,
       bottom: 0,
@@ -238,8 +238,8 @@ const useDetailsStyles = function () {
       paddingHorizontal: 16,
     },
     descriptionContainer: {
-      flex: 0.5,
-      flexDirection: "row",
+      flex: isIos ? 1.5 : 0.5,
+      flexDirection: isIos ? "column" : "row",
       gap: 16 * scale,
     //   backgroundColor: "rgba(0,0,0,0.85)",
       paddingHorizontal: 16,
@@ -256,33 +256,34 @@ const useDetailsStyles = function () {
       backgroundColor: "#151718",
       borderRadius: 20,
       paddingHorizontal: 24 * scale,
-      paddingVertical: 6 * scale,
+      paddingVertical: isIos ? 10 * scale : 6 * scale,
     },
     rentButton: {
       backgroundColor: "#151718",
       //   padding: 10,
       borderRadius: 20,
       paddingHorizontal: 24 * scale,
-      paddingVertical: 6 * scale,
+      paddingVertical: isIos ? 10 * scale : 6 * scale,
     },
     buyButtonText: {
       color: "white",
-      fontSize: 10 * scale,
+      fontSize: isIos ? 14 * scale : 10 * scale,
       fontWeight: "bold",
       textAlign: "center",
     },
     rentButtonText: {
       color: "white",
-      fontSize: 12 * scale,
+      fontSize: isIos ? 14 * scale : 10 * scale,
       fontWeight: "bold",
       textAlign: "center",
     },
     buttonContainer: {
       gap: 4 * scale,
-      width: "18%",
+      width: isIos ? "100%" : "18%",
     },
     overviewContainer: {
-      width: "50%",
+      width: isIos ? "100%" : "50%",
+      flex: 0.5,
     },
     movieInfo: {
       color: "white",
