@@ -1,17 +1,17 @@
-import { useState, type PropsWithChildren, type ReactElement } from 'react';
-import { StyleSheet, useColorScheme, Text, View } from 'react-native';
+import { useState, type PropsWithChildren, type ReactElement } from "react";
+import { StyleSheet, useColorScheme, Text, View, Platform, SafeAreaView } from "react-native";
 import Animated, {
   useAnimatedRef,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+} from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { ThemedView } from '@/components/ThemedView';
-import { useScale } from '@/hooks/useScale';
-import { Colors } from '@/constants/Colors';
+import { ThemedView } from "@/components/ThemedView";
+import { useScale } from "@/hooks/useScale";
+import { Colors } from "@/constants/Colors";
 
 type Props = PropsWithChildren<{
   headerImage?: ReactElement;
@@ -27,48 +27,47 @@ export default function ParallaxScrollView({
   headerLeftContent,
   headerRightContent,
 }: Props) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scale = useScale();
   const styles = useParallaxScrollViewStyles();
 
+  if (Platform.OS === 'ios' && !Platform.isTV) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        style={styles.scrollView}
+      >
+        <ThemedView style={styles.content}>{children}</ThemedView>
+      </Animated.ScrollView>
+      </SafeAreaView>
+    )
+  }
+
   return (
     <ThemedView style={styles.container}>
-      <Animated.View style={[styles.header, { backgroundColor: headerBackgroundColor["dark"] }]}>
+      {Platform.isTV ?<Animated.View
+        style={[
+          styles.header,
+          { backgroundColor: headerBackgroundColor["dark"] },
+        ]}
+      >
         {/* {headerImage} */}
-        
+
         <View style={styles.headerContent}>
           {/* Left section for text and buttons */}
-          <View style={styles.leftSection}>
-            {/* <LinearGradient
-                colors={[
-                  '#151718',
-                  'rgba(21,23,24,1)',
-                  '#151718',
-                  'rgba(0,0,0,0)',
-                ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.leftGradient}
-            /> */}
-            {headerLeftContent}
-          </View>
+          <View style={styles.leftSection}>{headerLeftContent}</View>
 
           {/* Right section for video/preview */}
-          <View style={styles.rightSection}>
-            {headerRightContent}
-          </View>
+          <View style={styles.rightSection}>{headerRightContent}</View>
         </View>
 
         {/* Bottom blend gradient */}
         <LinearGradient
-          colors={[
-            'rgba(0,0,0,0)',
-            '#151718',
-            'rgba(21,23,24,0.9)',
-            '#151718'
-          ]}
-          start={{ x: 0.4, y: 0}}
+          colors={["rgba(0,0,0,0)", "#151718", "rgba(21,23,24,0.9)", "#151718"]}
+          start={{ x: 0.4, y: 0 }}
           end={{ x: 0.4, y: 1 }}
           locations={[0.5, 0.84, 1, 1]}
           style={styles.headerOverlay}
@@ -85,13 +84,12 @@ export default function ParallaxScrollView({
           locations={[0, 0.9, 0.5, 1]}
           style={styles.headerOverlay}
         /> */}
-      </Animated.View>
-      <Animated.ScrollView 
-        ref={scrollRef} 
+      </Animated.View> : null}
+      <Animated.ScrollView
+        ref={scrollRef}
         scrollEventThrottle={16}
         style={styles.scrollView}
       >
-      
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
@@ -100,17 +98,19 @@ export default function ParallaxScrollView({
 
 const useParallaxScrollViewStyles = function () {
   const scale = useScale();
+  const isIos = Platform.OS === 'ios' && !Platform.isTV;
+
   return StyleSheet.create({
     container: {
       flex: 1,
     },
     header: {
       height: 350 * scale,
-      width: '100%',
-      position: 'absolute',
+      width: "100%",
+      position: "absolute",
       top: 0,
       left: 0,
-      overflow: 'hidden',
+      overflow: "hidden",
     },
     headerContent: {
       // position: 'absolute',
@@ -121,30 +121,30 @@ const useParallaxScrollViewStyles = function () {
       // flexDirection: 'row',
       // height: '100%'
       flex: 1,
-      justifyContent: 'center', 
-      alignItems: 'center',
-      flexDirection: 'row',
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "row",
       // paddingHorizontal: 16,
     },
     leftSection: {
       flex: 1,
       // position: 'relative',
-      // justifyContent: 'center', 
+      // justifyContent: 'center',
       // alignItems: 'center',
-      width: '40%',
+      width: "40%",
     },
     rightSection: {
       flex: 1,
     },
     leftGradient: {
-      position: 'absolute',
+      position: "absolute",
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
     },
     headerOverlay: {
-      position: 'absolute',
+      position: "absolute",
       top: 0,
       left: 0,
       right: 0,
@@ -152,12 +152,12 @@ const useParallaxScrollViewStyles = function () {
     },
     scrollView: {
       flex: 1,
-      marginTop: 300 * scale,
+      marginTop: isIos ? 0 :  300 * scale,
     },
     content: {
       flex: 1,
       backgroundColor: Colors.dark.background,
-      paddingBottom: 20
+      paddingBottom: 20,
     },
   });
 };

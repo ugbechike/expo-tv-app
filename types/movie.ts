@@ -18,6 +18,11 @@ export interface IMovie extends Partial<{
   pg_rating?: string;
   genre?: string[];
   video_type?: string;
+  isPurchased?: boolean;
+  isRented?: boolean;
+  buyPrice?: number;
+  rentPrice?: number;
+  currency?: string;
 }> {}
 
 export interface MovieResponse {

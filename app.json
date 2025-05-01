@@ -17,30 +17,55 @@
           }
         }
       ],
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "https://routertv.expo.app"
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.router",
+          "publishableKey": ""
+        }
+      ],
       "expo-font",
       "expo-video"
     ],
     "android": {
       "splash": {
         "image": "./assets/images/splash.png"
-      }
+      },
+      "package": "com.chycocee1.MyTVProject"
     },
     "ios": {
       "splash": {
         "image": "./assets/images/splash.png"
+      },
+      "bundleIdentifier": "com.chycocee1.MyTVProject",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "web": {
       "bundler": "metro",
       "favicon": "./assets/images/favicon.png",
-      "output": "static"
+      "output": "server"
     },
     "experiments": {
       "typedRoutes": true
     },
     "newArchEnabled": true,
     "name": "MyTVProject",
-    "slug": "MyTVProject"
+    "slug": "MyTVProject",
+    "extra": {
+      "router": {
+        "origin": "https://routertv.expo.app"
+      },
+      "eas": {
+        "projectId": "b54bf413-311f-4162-939b-dec0cf9fab61"
+      }
+    }
   }
 }
